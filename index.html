@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Studies II 2026 - Prep Examen</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --white: #ffffff;
+            --purple: #8e44ad;
+            --teal: #16a085;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        header, footer { background-color: var(--primary); color: var(--white); text-align: center; padding: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 1.8rem; }
+        footer p { margin: 0; font-weight: bold; letter-spacing: 1px; }
+        .container { flex: 1; max-width: 950px; margin: 2rem auto; padding: 0 1rem; width: 100%; box-sizing: border-box; }
+        .nav-tabs { display: flex; gap: 0.4rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { padding: 0.7rem 1.1rem; border: none; background: var(--secondary); color: white; cursor: pointer; border-radius: 5px; transition: background 0.3s; font-weight: 600; font-size: 0.9rem; }
+        .tab-btn.active { background: var(--accent); }
+        .tab-btn:hover:not(.active) { background: #4a6278; }
+        .view { display: none; background: var(--white); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .view.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* FLASHCARDS */
+        .card-container { perspective: 1000px; width: 100%; height: 280px; cursor: pointer; margin-bottom: 1rem; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 10px; }
+        .card.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 2rem; text-align: center; font-size: 1.2rem; border-radius: 10px; box-sizing: border-box; border: 1px solid #ddd; flex-direction: column; gap: 0.5rem; }
+        .card-front { background: var(--white); color: var(--primary); }
+        .card-back { background: var(--accent); color: white; transform: rotateY(180deg); }
+        .card-hint { font-size: 0.75rem; opacity: 0.6; margin-top: 0.5rem; }
+
+        /* QUIZ & SIM */
+        .question-text { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--primary); font-weight: bold; line-height: 1.5; }
+        .options-grid { display: grid; gap: 0.8rem; }
+        .option-btn { padding: 0.9rem 1rem; border: 2px solid var(--light); background: var(--white); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s; font-size: 1rem; }
+        .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
+        .option-btn.correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
+        .option-btn.wrong { background-color: var(--error) !important; color: white; border-color: var(--error); }
+        .feedback-box { margin-top: 1.2rem; padding: 1.2rem; border-radius: 8px; display: none; line-height: 1.6; font-size: 1rem; }
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 1rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        .controls { display: flex; justify-content: space-between; margin-top: 1.5rem; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .btn-main { padding: 0.7rem 1.8rem; border: none; border-radius: 5px; background: var(--accent); color: white; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.2s; }
+        .btn-main:hover { background: #2980b9; }
+        .btn-secondary { padding: 0.7rem 1.8rem; border: none; border-radius: 5px; background: var(--secondary); color: white; cursor: pointer; font-size: 1rem; font-weight: 600; }
+
+        /* MATCH */
+        .match-container { display: flex; gap: 1.5rem; }
+        .match-column { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .match-item { padding: 10px 12px; background: #fff; border: 2px solid #ddd; border-radius: 5px; cursor: pointer; text-align: center; font-size: 0.9rem; transition: all 0.2s; }
+        .match-item:hover:not(.matched) { border-color: var(--accent); }
+        .match-item.selected { border-color: var(--accent); background: #eef2ff; }
+        .match-item.matched { visibility: hidden; }
+        .match-score { text-align: center; font-size: 1.1rem; font-weight: bold; margin: 1rem 0; color: var(--success); }
+
+        /* TRUE/FALSE */
+        .tf-question { font-size: 1.3rem; font-weight: bold; color: var(--primary); text-align: center; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; margin-bottom: 1.5rem; line-height: 1.5; }
+        .tf-buttons { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem; }
+        .tf-btn { padding: 1rem 3rem; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .tf-true { background: var(--success); color: white; }
+        .tf-false { background: var(--error); color: white; }
+        .tf-btn:hover { opacity: 0.85; transform: scale(1.03); }
+        .tf-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .tf-result { text-align: center; font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0; }
+
+        /* SPEEDRUN */
+        .speedrun-timer { font-size: 3rem; font-weight: bold; text-align: center; color: var(--error); margin-bottom: 0.5rem; font-variant-numeric: tabular-nums; }
+        .speedrun-timer.warning { animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .speedrun-score { text-align: center; font-size: 1.2rem; color: var(--secondary); margin-bottom: 1.5rem; }
+        .speedrun-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .speedrun-options .option-btn { font-size: 0.95rem; padding: 0.8rem; }
+        .speedrun-result-num { font-size: 4rem; font-weight: bold; color: var(--accent); text-align: center; margin: 1rem 0; }
+        .speedrun-breakdown { display: flex; justify-content: center; gap: 2rem; margin: 1rem 0; font-size: 1.1rem; }
+        .speedrun-breakdown .correct-count { color: var(--success); font-weight: bold; }
+        .speedrun-breakdown .wrong-count { color: var(--error); font-weight: bold; }
+
+        /* CATEGORIES */
+        .cat-instruction { text-align: center; color: var(--secondary); margin-bottom: 1.5rem; font-size: 1rem; }
+        .cat-item-display { background: var(--primary); color: white; padding: 1.2rem 2rem; border-radius: 10px; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 1.5rem; min-height: 70px; display: flex; align-items: center; justify-content: center; line-height: 1.4; }
+        .cat-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .cat-btn { padding: 0.9rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .cat-btn:hover { opacity: 0.85; transform: scale(1.03); }
+        .cat-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .cat-result-box { margin-top: 1rem; text-align: center; padding: 1rem; border-radius: 8px; font-weight: bold; display: none; }
+
+        /* ERRORES */
+        .error-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+        .error-list li { background: #fff3f3; border-left: 4px solid var(--error); padding: 0.8rem 1rem; border-radius: 5px; font-size: 0.95rem; }
+        .error-list li strong { color: var(--primary); }
+        .error-list li em { color: var(--success); }
+        .no-errors { text-align: center; color: var(--success); font-size: 1.2rem; padding: 2rem; }
+
+        /* SIMULADOR */
+        #sim-timer { font-weight: bold; color: var(--error); margin-bottom: 1rem; font-size: 1.3rem; }
+        #sim-timer.low { animation: pulse 1s infinite; }
+        .sim-score-big { font-size: 4rem; font-weight: bold; color: var(--accent); text-align: center; margin: 1rem 0; }
+        .sim-rating { font-size: 1.4rem; text-align: center; margin-bottom: 1rem; font-weight: bold; }
+        .unit-badge { display: inline-block; font-size: 0.7rem; background: var(--accent); color: white; padding: 2px 6px; border-radius: 3px; margin-left: 6px; vertical-align: middle; opacity: 0.8; }
+
+        @media (max-width: 600px) {
+            .match-container { flex-direction: column; }
+            .speedrun-options { grid-template-columns: 1fr; }
+            .tf-btn { padding: 0.9rem 2rem; }
+            header h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>German Studies II 2026 — Prep Examen</h1>
+</header>
+
+<div class="container">
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="showView('flashcards')">🃏 Flashcards</button>
+        <button class="tab-btn" onclick="showView('quiz')">📝 Cuestionario</button>
+        <button class="tab-btn" onclick="showView('truefalse')">✅ V/F</button>
+        <button class="tab-btn" onclick="showView('speedrun')">⚡ Speedrun</button>
+        <button class="tab-btn" onclick="showView('match')">🔗 Vocabulario</button>
+        <button class="tab-btn" onclick="showView('categorias')">📂 Categorías</button>
+        <button class="tab-btn" onclick="showView('simulador')">🎓 Simulacro</button>
+        <button class="tab-btn" onclick="showView('errores')">❌ Mis Errores</button>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div id="flashcards" class="view active">
+        <div class="progress-bar"><div id="flash-progress" class="progress-fill"></div></div>
+        <div class="card-container" onclick="this.querySelector('.card').classList.toggle('flipped')">
+            <div class="card">
+                <div class="card-front" id="flash-front">
+                    <span id="flash-front-text">Cargando...</span>
+                    <span class="card-hint">Haz clic para ver la respuesta</span>
+                </div>
+                <div class="card-back" id="flash-back">
+                    <span id="flash-back-text">Cargando...</span>
+                    <span id="flash-unit" class="card-hint"></span>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn-main" onclick="prevFlash()">← Anterior</button>
+            <span id="flash-counter" style="font-weight:bold;color:var(--secondary)">1/X</span>
+            <button class="btn-main" onclick="nextFlash()">Siguiente →</button>
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <button class="btn-secondary" onclick="shuffleFlash()">🔀 Mezclar</button>
+        </div>
+    </div>
+
+    <!-- CUESTIONARIO -->
+    <div id="quiz" class="view">
+        <div class="progress-bar"><div id="quiz-progress" class="progress-fill"></div></div>
+        <div id="quiz-content">
+            <div class="question-text" id="quiz-question"></div>
+            <div class="options-grid" id="quiz-options"></div>
+            <div class="feedback-box" id="quiz-feedback"></div>
+        </div>
+        <div class="controls">
+            <span id="quiz-counter" style="color:var(--secondary);font-weight:bold;"></span>
+            <button class="btn-main" onclick="nextQuizQuestion()" id="quiz-next-btn" style="display:none;">Siguiente →</button>
+        </div>
+    </div>
+
+    <!-- VERDADERO / FALSO -->
+    <div id="truefalse" class="view">
+        <div class="progress-bar"><div id="tf-progress" class="progress-fill"></div></div>
+        <div class="tf-question" id="tf-statement">Cargando...</div>
+        <div class="tf-buttons">
+            <button class="tf-btn tf-true" id="tf-true-btn" onclick="checkTF(true)">✓ VERDADERO</button>
+            <button class="tf-btn tf-false" id="tf-false-btn" onclick="checkTF(false)">✗ FALSO</button>
+        </div>
+        <div class="feedback-box" id="tf-feedback"></div>
+        <div class="controls">
+            <span id="tf-counter" style="color:var(--secondary);font-weight:bold;"></span>
+            <button class="btn-main" onclick="nextTF()" id="tf-next-btn" style="display:none;">Siguiente →</button>
+        </div>
+    </div>
+
+    <!-- SPEEDRUN -->
+    <div id="speedrun" class="view">
+        <div id="speed-start" style="text-align:center;">
+            <h2>⚡ Speedrun</h2>
+            <p>Responde el máximo de preguntas en <strong>60 segundos</strong>.<br>No hay explicaciones — sólo velocidad.</p>
+            <button class="btn-main" onclick="startSpeedrun()">¡Empezar!</button>
+        </div>
+        <div id="speed-game" style="display:none;">
+            <div class="speedrun-timer" id="speed-timer">60</div>
+            <div class="speedrun-score">✅ <span id="speed-correct">0</span> correctas &nbsp;|&nbsp; ❌ <span id="speed-wrong">0</span> incorrectas</div>
+            <div class="question-text" id="speed-question"></div>
+            <div class="speedrun-options" id="speed-options"></div>
+        </div>
+        <div id="speed-results" style="display:none;text-align:center;">
+            <h2>⚡ Resultado Speedrun</h2>
+            <div class="speedrun-result-num" id="speed-final-score">0</div>
+            <div class="speedrun-breakdown">
+                <span class="correct-count">✅ <span id="speed-res-correct">0</span> correctas</span>
+                <span class="wrong-count">❌ <span id="speed-res-wrong">0</span> incorrectas</span>
+            </div>
+            <p id="speed-rating" style="font-size:1.2rem;font-weight:bold;"></p>
+            <button class="btn-main" onclick="resetSpeedrun()">Volver a intentar</button>
+        </div>
+    </div>
+
+    <!-- VOCABULARIO (MATCHING) -->
+    <div id="match" class="view">
+        <h3 style="margin-top:0;">Empareja el término alemán con su significado</h3>
+        <div class="match-score" id="match-score" style="display:none;"></div>
+        <div class="match-container">
+            <div class="match-column" id="match-left"></div>
+            <div class="match-column" id="match-right"></div>
+        </div>
+        <div style="text-align:center;margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <button class="btn-main" onclick="initMatch('unit1')">Unit 1</button>
+            <button class="btn-main" onclick="initMatch('unit2')">Unit 2</button>
+            <button class="btn-main" onclick="initMatch('all')">Todos</button>
+        </div>
+    </div>
+
+    <!-- CATEGORÍAS -->
+    <div id="categorias" class="view">
+        <div id="cat-menu" style="text-align:center;">
+            <h2>📂 Modo Categorías</h2>
+            <p>Clasifica cada concepto según corresponda.</p>
+            <div style="display:flex;flex-direction:column;gap:1rem;align-items:center;margin-top:1rem;">
+                <button class="btn-main" onclick="startCat('units')" style="width:280px;">¿Unit 1 o Unit 2?</button>
+                <button class="btn-main" onclick="startCat('csr')" style="width:280px;">¿CSR Explícita o Implícita?</button>
+                <button class="btn-main" onclick="startCat('infra')" style="width:280px;">¿Stuttgart 21 o Aeropuerto Berlín?</button>
+            </div>
+        </div>
+        <div id="cat-game" style="display:none;">
+            <div class="progress-bar"><div id="cat-progress" class="progress-fill"></div></div>
+            <p class="cat-instruction" id="cat-instruction"></p>
+            <div class="cat-item-display" id="cat-item-text"></div>
+            <div class="cat-buttons" id="cat-buttons"></div>
+            <div class="cat-result-box" id="cat-result"></div>
+            <div class="controls" style="margin-top:1.5rem;">
+                <button class="btn-secondary" onclick="showCatMenu()">← Menú</button>
+                <span id="cat-counter" style="font-weight:bold;color:var(--secondary);"></span>
+                <button class="btn-main" id="cat-next-btn" onclick="nextCat()" style="display:none;">Siguiente →</button>
+            </div>
+        </div>
+        <div id="cat-results" style="display:none;text-align:center;">
+            <h2>Resultado</h2>
+            <div class="sim-score-big" id="cat-final-score"></div>
+            <p id="cat-rating" style="font-size:1.2rem;font-weight:bold;"></p>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+                <button class="btn-secondary" onclick="showCatMenu()">← Menú</button>
+                <button class="btn-main" onclick="restartCat()">Reintentar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIMULACRO -->
+    <div id="simulador" class="view">
+        <div id="sim-start">
+            <h2>🎓 Simulacro Real de Examen</h2>
+            <p>15 preguntas aleatorias de las Unidades 1 y 2. Tiempo límite: <strong>8 minutos</strong>.</p>
+            <p style="color:var(--secondary);font-size:0.9rem;">Las respuestas NO se muestran durante el simulacro — igual que en el examen real.</p>
+            <button class="btn-main" onclick="startSim()">Empezar Simulacro</button>
+        </div>
+        <div id="sim-content" style="display:none;">
+            <div id="sim-timer">⏱ Tiempo: 08:00</div>
+            <div class="progress-bar"><div id="sim-progress" class="progress-fill"></div></div>
+            <div class="question-text" id="sim-question"></div>
+            <div class="options-grid" id="sim-options"></div>
+            <div class="controls">
+                <span id="sim-q-counter" style="color:var(--secondary);font-weight:bold;"></span>
+                <button class="btn-main" onclick="submitSimAnswer()">Enviar Respuesta →</button>
+            </div>
+        </div>
+        <div id="sim-results" style="display:none;text-align:center;">
+            <h2>📊 Resultados del Simulacro</h2>
+            <div class="sim-score-big" id="sim-score-text"></div>
+            <p class="sim-rating" id="sim-rating"></p>
+            <div id="sim-review" style="text-align:left;margin-top:1.5rem;"></div>
+            <button class="btn-main" onclick="resetSim()" style="margin-top:1.5rem;">Volver a intentar</button>
+        </div>
+    </div>
+
+    <!-- MIS ERRORES -->
+    <div id="errores" class="view">
+        <h2 style="margin-top:0;">❌ Mis Errores</h2>
+        <p style="color:var(--secondary);">Preguntas que has fallado en el Cuestionario o V/F. Repásalas hasta dominarlas.</p>
+        <div id="errores-list"></div>
+        <div style="text-align:center;margin-top:1.5rem;">
+            <button class="btn-secondary" onclick="clearErrors()">🗑 Limpiar Errores</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Tutor Jose A — "Property entails obligations"</p>
+</footer>
+
+<script>
+// ============================================================
+// BANCO DE PREGUNTAS — extraídas literalmente de Unit 1 y Unit 2
+// ============================================================
+const STUDY_DATA = [
+    {
+        id: 1, unit: 1,
+        pregunta: "¿Cuál es el ranking de Alemania en facilidad para abrir un negocio según el Banco Mundial e IFC?",
+        respuesta: "106th en el mundo",
+        opciones: ["3rd en el mundo", "20th en el mundo", "106th en el mundo", "15th en el mundo"],
+        explicacion: "Unit 1: 'World Bank and IFC rank Germany in 106th in the world for ease of starting a business'."
+    },
+    {
+        id: 2, unit: 2,
+        pregunta: "¿Qué frase del Artículo 14 de la Constitución Alemana fundamenta la CSR?",
+        respuesta: "Property entails obligations",
+        opciones: ["Property is absolute", "Property entails obligations", "Property is for the state", "Property has no limits"],
+        explicacion: "Unit 2, Art. 14: 'Property entails obligations. Its use shall also serve the public good'."
+    },
+    {
+        id: 3, unit: 1,
+        pregunta: "En la cultura de negocios alemana, ¿qué se considera una ofensa muy seria?",
+        respuesta: "Llegar 15 minutos tarde",
+        opciones: ["No traer tarjeta de visita", "Llegar 15 minutos tarde", "No usar corbata", "Hablar de política"],
+        explicacion: "Unit 1: 'Punctuality in German business culture is sacred. Arriving 15 minutes late will be considered a very serious offence'."
+    },
+    {
+        id: 4, unit: 1,
+        pregunta: "¿Cuál es la tasa de impuesto corporativo (Corporation Tax Rate) en Alemania en 2023?",
+        respuesta: "29.9%",
+        opciones: ["19%", "25%", "29.9%", "25.8%"],
+        explicacion: "Unit 1: 'Corporation Tax Rates 2023 - Germany: 29.9%'. La más alta junto con Japón."
+    },
+    {
+        id: 5, unit: 2,
+        pregunta: "¿Cuál es el objetivo principal del EU Green Deal?",
+        respuesta: "Neutralidad climática para 2050",
+        opciones: ["Reducir impuestos energéticos", "Neutralidad climática para 2050", "Eliminar el carbón para 2030", "Aumentar el PIB verde"],
+        explicacion: "Unit 2: 'Overall target: climate neutrality by 2050'."
+    },
+    {
+        id: 6, unit: 2,
+        pregunta: "¿Qué porcentaje de jubilaciones anticipadas en Alemania son causadas por enfermedades psicológicas?",
+        respuesta: "Every second (una de cada dos)",
+        opciones: ["10%", "25%", "Every second (una de cada dos)", "Solo el 5%"],
+        explicacion: "Unit 2: 'Every second early retirement is caused by psychological illnesses'."
+    },
+    {
+        id: 7, unit: 1,
+        pregunta: "Según la Unit 1, ¿quién es el 'World Champion of Bureaucracy'?",
+        respuesta: "Alemania",
+        opciones: ["Francia", "China", "Alemania", "USA"],
+        explicacion: "Unit 1: 'Germany is the world champion of Bureaucracy (T. Satinsky, Publisher)'."
+    },
+    {
+        id: 8, unit: 2,
+        pregunta: "¿Qué significa que la CSR en Alemania sea 'Implicit'?",
+        respuesta: "Basada en valores, normas y reglas codificadas y obligatorias",
+        opciones: ["Políticas voluntarias de la empresa", "Basada en valores, normas y reglas codificadas y obligatorias", "Solo filantropía corporativa", "Estrategias de marketing sostenible"],
+        explicacion: "Unit 2 (Matten & Moon 2008): 'Implicit CSR: Consists of values, norms, and rules that result in (often codified and mandatory) requirements'."
+    },
+    {
+        id: 9, unit: 1,
+        pregunta: "¿Cuál es el precio de la electricidad para la industria en Alemania (2024)?",
+        respuesta: "0.40 USD/kWh",
+        opciones: ["0.08 USD/kWh", "0.18 USD/kWh", "0.25 USD/kWh", "0.40 USD/kWh"],
+        explicacion: "Unit 1: 'Germany: 0.40 USD/kWh'. Muy superior a USA (0.18) o China (0.08)."
+    },
+    {
+        id: 10, unit: 2,
+        pregunta: "¿Para qué empresas aplica el German Supply Chain Due Diligence Act (enero 2023)?",
+        respuesta: "Empresas con más de 1,000 empleados",
+        opciones: ["Todas las empresas", "Solo PYMES (SME)", "Empresas con más de 1,000 empleados", "Solo empresas de exportación"],
+        explicacion: "Unit 2: 'German Supply Chain Due Diligence Act for companies above 1,000 employees' (Jan 2023)."
+    },
+    {
+        id: 11, unit: 1,
+        pregunta: "¿Cuánto dinero extranjero se invirtió en Alemania en 2025?",
+        respuesta: "96 billion euros",
+        opciones: ["40 billion euros", "96 billion euros", "200 billion euros", "50 billion euros"],
+        explicacion: "Unit 1: '96 billion euros invested in Germany in 2025 — more than twice the previous year's figure'."
+    },
+    {
+        id: 12, unit: 1,
+        pregunta: "¿Cuántas empresas extranjeras operan en Alemania?",
+        respuesta: "Más de 40,000",
+        opciones: ["Más de 10,000", "Más de 40,000", "Más de 100,000", "Más de 5,000"],
+        explicacion: "Unit 1: 'More than 40,000 foreign-controlled companies doing business in Germany'."
+    },
+    {
+        id: 13, unit: 1,
+        pregunta: "¿Qué porcentaje de empleos en Alemania dependen del sector exportador?",
+        respuesta: "Casi uno de cada cuatro (25%)",
+        opciones: ["10%", "15%", "Casi uno de cada cuatro (25%)", "50%"],
+        explicacion: "Unit 1: 'Almost one in four jobs are dependent on the export sector'."
+    },
+    {
+        id: 14, unit: 1,
+        pregunta: "¿Cuánto tiempo tarda en completarse el registro de una propiedad en Alemania?",
+        respuesta: "40 días de media",
+        opciones: ["7 días", "20 días", "40 días de media", "90 días"],
+        explicacion: "Unit 1: 'Takes an average of 40 days to complete property registration'."
+    },
+    {
+        id: 15, unit: 1,
+        pregunta: "¿Cuántas horas anuales dedican las empresas en Alemania al cumplimiento fiscal?",
+        respuesta: "207 horas (9 pagos al año)",
+        opciones: ["50 horas", "100 horas", "207 horas (9 pagos al año)", "350 horas"],
+        explicacion: "Unit 1: 'Businesses must contend with 9 tax payments per year taking 207 hours of time'."
+    },
+    {
+        id: 16, unit: 1,
+        pregunta: "¿Cuántos días tarda en ejecutarse un contrato en Alemania?",
+        respuesta: "394 días",
+        opciones: ["120 días", "210 días", "394 días", "500 días"],
+        explicacion: "Unit 1: 'Contract enforcement timeline: 394 days'."
+    },
+    {
+        id: 17, unit: 1,
+        pregunta: "¿Cuántos días tarda en resolverse una insolvencia en Alemania?",
+        respuesta: "438 días",
+        opciones: ["200 días", "394 días", "438 días", "600 días"],
+        explicacion: "Unit 1: 'Insolvency resolution timeline: 438 days'."
+    },
+    {
+        id: 18, unit: 1,
+        pregunta: "¿Cuántas regulaciones totales existen en Alemania en 2024?",
+        respuesta: "97,000 regulaciones",
+        opciones: ["10,000", "50,000", "97,000 regulaciones", "200,000"],
+        explicacion: "Unit 1: '97,000 regulations in total (2024)'."
+    },
+    {
+        id: 19, unit: 1,
+        pregunta: "¿Cuándo comenzó la planificación del proyecto Stuttgart 21?",
+        respuesta: "1995",
+        opciones: ["1985", "1995", "2005", "2010"],
+        explicacion: "Unit 1: 'Stuttgart 21 Railway Station — Planning Start: 1995'."
+    },
+    {
+        id: 20, unit: 1,
+        pregunta: "¿Cuál era el coste original previsto del Stuttgart 21?",
+        respuesta: "3 billion euros",
+        opciones: ["1 billion euros", "3 billion euros", "7 billion euros", "10 billion euros"],
+        explicacion: "Unit 1: 'Stuttgart 21 — Initial Projected Cost: 3 billion euros'. El coste final superó los 10 billion."
+    },
+    {
+        id: 21, unit: 1,
+        pregunta: "¿En qué año abrió finalmente el Aeropuerto de Berlín?",
+        respuesta: "2020",
+        opciones: ["2012", "2015", "2018", "2020"],
+        explicacion: "Unit 1: 'Berlin Airport — Actual Opening: 2020'. Estaba previsto para 2012."
+    },
+    {
+        id: 22, unit: 1,
+        pregunta: "¿Cuánto costó realmente construir el Aeropuerto de Berlín?",
+        respuesta: "7 billion euros",
+        opciones: ["2 billion euros", "4 billion euros", "7 billion euros", "12 billion euros"],
+        explicacion: "Unit 1: 'Berlin Airport — Actual Cost: 7 billion euros'. El presupuesto original era 2 billion."
+    },
+    {
+        id: 23, unit: 1,
+        pregunta: "¿Cuál es el déficit de infraestructuras de Alemania para el período 2025-2035?",
+        respuesta: "982.1 billion euros",
+        opciones: ["200 billion euros", "500 billion euros", "982.1 billion euros", "1,500 billion euros"],
+        explicacion: "Unit 1: 'Infrastructure gap 2025-2035: 982.1 billion euros shortfall'."
+    },
+    {
+        id: 24, unit: 1,
+        pregunta: "¿Cuántos puentes necesitan renovación en Alemania?",
+        respuesta: "4,600 puentes",
+        opciones: ["500 puentes", "1,200 puentes", "4,600 puentes", "10,000 puentes"],
+        explicacion: "Unit 1: '4,600 bridges require renovation'."
+    },
+    {
+        id: 25, unit: 1,
+        pregunta: "¿Cuál es la puntuación de infraestructura de Alemania a nivel global?",
+        respuesta: "67.7 (puesto 20 global)",
+        opciones: ["88.4 (puesto 1)", "77.1 (puesto 5)", "73.7 (puesto 10)", "67.7 (puesto 20 global)"],
+        explicacion: "Unit 1: 'Overall Infrastructure Score Germany: 67.7 (ranking 20th globally)'. Switzerland leads with 88.4."
+    },
+    {
+        id: 26, unit: 1,
+        pregunta: "¿Cuál es el mejor horario para fijar una cita de negocios en Alemania?",
+        respuesta: "Entre las 10:00 y las 13:00",
+        opciones: ["08:00 – 09:00", "Entre las 10:00 y las 13:00", "14:00 – 16:00", "17:00 – 19:00"],
+        explicacion: "Unit 1: 'Business Appointment Best Time: Between 10:00 am and 1:00 pm'."
+    },
+    {
+        id: 27, unit: 2,
+        pregunta: "¿Qué reducción de emisiones de GEI exige Alemania para 2030?",
+        respuesta: "Al menos 65% comparado con 1990",
+        opciones: ["30%", "55%", "Al menos 65% comparado con 1990", "80%"],
+        explicacion: "Unit 2: 'Climate Target 2030: greenhouse gas emissions reduced by at least 65% compared to 1990 levels'."
+    },
+    {
+        id: 28, unit: 2,
+        pregunta: "¿Para qué año tiene previsto Alemania ser neutral en gases de efecto invernadero?",
+        respuesta: "2045",
+        opciones: ["2030", "2040", "2045", "2050"],
+        explicacion: "Unit 2: 'Germany aims to be greenhouse gas neutral by 2045 — included in the Basic Law'."
+    },
+    {
+        id: 29, unit: 2,
+        pregunta: "¿Cuándo falló el Tribunal Constitucional Federal alemán sobre la Ley del Clima?",
+        respuesta: "29 de abril de 2021",
+        opciones: ["15 enero 2020", "29 de abril de 2021", "10 marzo 2022", "1 junio 2023"],
+        explicacion: "Unit 2: 'Federal Constitutional Court Climate Ruling: April 29, 2021 — ruled 2019 Climate Change Act partially unconstitutional'."
+    },
+    {
+        id: 30, unit: 2,
+        pregunta: "¿En qué año definieron los estados miembros de la ONU los 17 ODS (SDGs)?",
+        respuesta: "2015",
+        opciones: ["2010", "2015", "2018", "2020"],
+        explicacion: "Unit 2: '2015 — UN member states defined 17 Sustainable Development Goals in the 2030 Agenda'."
+    },
+    {
+        id: 31, unit: 2,
+        pregunta: "¿Cuál es la definición de PYME (SME) en Alemania según la Unit 2?",
+        respuesta: "Menos de 500 empleados y menos de €50M de facturación",
+        opciones: ["Menos de 100 empleados", "Menos de 500 empleados y menos de €50M de facturación", "Solo empresas familiares", "Menos de 1,000 empleados"],
+        explicacion: "Unit 2: 'SME Definition: Below 500 employees, less than €50 million annual turnover'."
+    },
+    {
+        id: 32, unit: 2,
+        pregunta: "¿Qué porcentaje de la población alemana conforma el 'Liberal-Intellectual Milieu'?",
+        respuesta: "Aproximadamente el 10% (6 millones)",
+        opciones: ["2%", "5%", "Aproximadamente el 10% (6 millones)", "25%"],
+        explicacion: "Unit 2: 'Liberal-Intellectual Milieu: approximately 10% of population (6 million people)'."
+    },
+    {
+        id: 33, unit: 2,
+        pregunta: "¿Qué principio constitucional alemán garantiza la negociación colectiva (Collective Bargaining)?",
+        respuesta: "Es un principio constitucional (Grundgesetz)",
+        opciones: ["Es solo una recomendación", "Es un principio constitucional (Grundgesetz)", "Está regulado por la UE", "Es voluntario para las empresas"],
+        explicacion: "Unit 2: 'Free collective bargaining is a constitutional principle' in Germany."
+    },
+    {
+        id: 34, unit: 2,
+        pregunta: "¿Qué es la 'Sozialpartnerschaft'?",
+        respuesta: "Relaciones laborales basadas en la empresa como institución social con papel en la sociedad",
+        opciones: ["Un partido político alemán", "Un fondo de pensiones público", "Relaciones laborales basadas en la empresa como institución social con papel en la sociedad", "La organización de los sindicatos alemanes"],
+        explicacion: "Unit 2: 'Sozialpartnerschaft: Industrial relations based on businesses understood as social institutions in complex relationship with society'."
+    },
+    {
+        id: 35, unit: 2,
+        pregunta: "¿Cuál es la diferencia clave entre CSR Explícita e Implícita según Matten & Moon (2008)?",
+        respuesta: "Explícita = voluntaria; Implícita = obligatoria/codificada",
+        opciones: ["Explícita = obligatoria; Implícita = voluntaria", "Explícita = voluntaria; Implícita = obligatoria/codificada", "Ambas son voluntarias", "Ambas son obligatorias"],
+        explicacion: "Unit 2 (Matten & Moon 2008): Explicit CSR = voluntary policies; Implicit CSR = codified and mandatory requirements."
+    },
+    {
+        id: 36, unit: 1,
+        pregunta: "¿Cuántos tipos de impuestos pueden pagar las empresas en Alemania?",
+        respuesta: "14 tipos de impuestos",
+        opciones: ["5 tipos", "9 tipos", "14 tipos de impuestos", "20 tipos"],
+        explicacion: "Unit 1: '14 different taxes may be payable by businesses operating in Germany'."
+    },
+    {
+        id: 37, unit: 1,
+        pregunta: "¿Cuántos documentos se necesitan para exportar e importar en Alemania?",
+        respuesta: "4 para exportar, 5 para importar",
+        opciones: ["2 para exportar, 2 para importar", "4 para exportar, 5 para importar", "6 para exportar, 6 para importar", "3 para exportar, 3 para importar"],
+        explicacion: "Unit 1: '4 documents to export, 5 documents to import'. Takes a week on average for both."
+    },
+    {
+        id: 38, unit: 1,
+        pregunta: "¿Qué posición ocupa Alemania como economía mundial?",
+        respuesta: "1ª en Europa, 3ª en el mundo",
+        opciones: ["1ª en Europa y en el mundo", "1ª en Europa, 3ª en el mundo", "2ª en Europa, 5ª en el mundo", "3ª en Europa, 10ª en el mundo"],
+        explicacion: "Unit 1: 'Germany: Biggest economy in Europe, third largest in the world'."
+    },
+    {
+        id: 39, unit: 2,
+        pregunta: "¿Qué seguro social NO está entre las contribuciones obligatorias en Alemania?",
+        respuesta: "Seguro de viaje",
+        opciones: ["Seguro de salud", "Seguro de pensiones", "Seguro de viaje", "Seguro de accidentes"],
+        explicacion: "Unit 2: Compulsory systems: Health, pensions, unemployment, accident, and nursing care. No existe el 'seguro de viaje' como contribución obligatoria."
+    },
+    {
+        id: 40, unit: 2,
+        pregunta: "¿Qué empresas aparecen como ejemplos del German Supply Chain Due Diligence Act?",
+        respuesta: "Amazon, Ikea, Rewe, Edeka",
+        opciones: ["VW, BMW, Siemens, Bayer", "Amazon, Ikea, Rewe, Edeka", "Mercedes, Adidas, SAP, Bosch", "H&M, Zara, Lidl, Aldi"],
+        explicacion: "Unit 2: Companies targeted include 'Amazon, Ikea, Rewe, Edeka'."
+    },
+    {
+        id: 41, unit: 1,
+        pregunta: "¿Qué dijo el CEO de Mercedes, Ola Källenius, sobre el modelo de negocios alemán?",
+        respuesta: "Los mejores elementos son democracia, tolerancia, respeto y economía social de mercado",
+        opciones: ["Lo más importante es la tecnología y la innovación", "Los mejores elementos son democracia, tolerancia, respeto y economía social de mercado", "Alemania debe reducir impuestos para competir", "La burocracia es el mayor activo de Alemania"],
+        explicacion: "Unit 1: Ola Källenius (Mercedes CEO): 'the best elements of the German business model are democracy, tolerance, respect and social market economy'."
+    },
+    {
+        id: 42, unit: 2,
+        pregunta: "¿Cuándo adoptó el Gabinete Federal alemán el desarrollo de la Estrategia de Sostenibilidad Alemana?",
+        respuesta: "10 de marzo de 2021",
+        opciones: ["1 enero 2020", "10 de marzo de 2021", "29 abril 2021", "15 junio 2022"],
+        explicacion: "Unit 2: 'March 10, 2021 — Federal Cabinet adopted further development of German Sustainable Development Strategy'."
+    },
+    {
+        id: 43, unit: 1,
+        pregunta: "¿Cuánto tiempo tardan en promedio las empresas en resolver las contribuciones a la Seguridad Social en Alemania?",
+        respuesta: "134 horas al año",
+        opciones: ["20 horas", "60 horas", "134 horas al año", "250 horas"],
+        explicacion: "Unit 1: 'Social Security Contributions take 134 hours to deal with alone'."
+    },
+    {
+        id: 44, unit: 1,
+        pregunta: "¿Cuándo aumentó el peso máximo permitido para vehículos de carga pesada (HGV) en Alemania?",
+        respuesta: "En 1986, hasta 40 toneladas",
+        opciones: ["En 1960, hasta 20 toneladas", "En 1986, hasta 40 toneladas", "En 2000, hasta 44 toneladas", "En 2010, hasta 50 toneladas"],
+        explicacion: "Unit 1: 'In 1986, maximum permissible weight for HGVs increased to 40 tonnes'."
+    },
+    {
+        id: 45, unit: 2,
+        pregunta: "¿Cuántas áreas de transformación principales identifica la Estrategia de Sostenibilidad Alemana?",
+        respuesta: "6 áreas",
+        opciones: ["3 áreas", "4 áreas", "6 áreas", "8 áreas"],
+        explicacion: "Unit 2: 'Six Major Transformation Areas' incluyendo bienestar humano, justicia social, transición energética, economía circular, construcción sostenible y sistemas alimentarios."
+    }
+];
+
+// ============================================================
+// VERDADERO / FALSO — extraído literalmente de los PDFs
+// ============================================================
+const TRUE_FALSE_DATA = [
+    { enunciado: "Alemania ocupa el puesto 106 en el ranking mundial de facilidad para abrir un negocio.", correcto: true, explicacion: "VERDADERO. Unit 1: 'World Bank and IFC rank Germany in 106th in the world for ease of starting a business'." },
+    { enunciado: "La tasa de impuesto corporativo en Alemania en 2023 es del 19%, la más baja de Europa.", correcto: false, explicacion: "FALSO. Alemania tiene el 29.9% (una de las más altas). El 19% corresponde al Reino Unido (UK)." },
+    { enunciado: "El EU Green Deal tiene como objetivo la neutralidad climática para 2050.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Overall target: climate neutrality by 2050'." },
+    { enunciado: "El Aeropuerto de Berlín se inauguró en 2012, según lo previsto.", correcto: false, explicacion: "FALSO. Estaba previsto para 2012, pero abrió en 2020." },
+    { enunciado: "Stuttgart 21 tenía un presupuesto original de 3 billion euros.", correcto: true, explicacion: "VERDADERO. Unit 1: 'Stuttgart 21 — Initial Projected Cost: 3 billion euros'." },
+    { enunciado: "El German Supply Chain Due Diligence Act se aplica a empresas con más de 500 empleados.", correcto: false, explicacion: "FALSO. Se aplica a empresas con más de 1,000 empleados (desde enero 2023)." },
+    { enunciado: "Alemania aspira a ser neutral en GEI para 2045.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Germany aims to be greenhouse gas neutral by 2045'." },
+    { enunciado: "El artículo 14 de la Constitución Alemana dice 'Property entails obligations'.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Art 14. German constitution: Property entails obligations. Its use shall also serve the public good'." },
+    { enunciado: "Alemania es la mayor economía del mundo.", correcto: false, explicacion: "FALSO. Alemania es la mayor economía de Europa, pero ocupa el 3er puesto mundial." },
+    { enunciado: "La electricidad industrial en Alemania cuesta 0.18 USD/kWh en 2024.", correcto: false, explicacion: "FALSO. En Alemania cuesta 0.40 USD/kWh. Los 0.18 corresponden a USA." },
+    { enunciado: "La CSR Explícita consiste en políticas voluntarias motivadas por expectativas de stakeholders.", correcto: true, explicacion: "VERDADERO. Unit 2 (Matten & Moon 2008): 'Explicit CSR: voluntary corporate policies, programs, and strategies'." },
+    { enunciado: "En Alemania, ejecutar un contrato tarda 438 días.", correcto: false, explicacion: "FALSO. Ejecutar un contrato tarda 394 días. Los 438 días corresponden a resolver una insolvencia." },
+    { enunciado: "El 'Liberal-Intellectual Milieu' representa aproximadamente el 10% de la población alemana.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Liberal-Intellectual Milieu: approximately 10% of population (6 million people)'." },
+    { enunciado: "Los ODS (SDGs) de la ONU fueron definidos en 2015 en la Agenda 2030.", correcto: true, explicacion: "VERDADERO. Unit 2: '2015 — UN member states defined 17 Sustainable Development Goals in 2030 Agenda'." },
+    { enunciado: "Alemania tiene más de 100,000 empresas extranjeras operando en su territorio.", correcto: false, explicacion: "FALSO. Unit 1: 'More than 40,000 foreign-controlled companies doing business in Germany'." },
+    { enunciado: "Alemania tiene 97,000 regulaciones en total en 2024.", correcto: true, explicacion: "VERDADERO. Unit 1: '97,000 regulations in total (2024)'." },
+    { enunciado: "La negociación colectiva (free collective bargaining) es un principio constitucional en Alemania.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Free collective bargaining is a constitutional principle'." },
+    { enunciado: "El precio de la electricidad en China es de 0.40 USD/kWh, igual que en Alemania.", correcto: false, explicacion: "FALSO. China tiene 0.08 USD/kWh. Alemania tiene 0.40 USD/kWh (la más cara)." },
+    { enunciado: "El Tribunal Constitucional Federal alemán falló sobre la Ley del Clima el 29 de abril de 2021.", correcto: true, explicacion: "VERDADERO. Unit 2: 'Federal Constitutional Court Climate Ruling: April 29, 2021'." },
+    { enunciado: "La PYME en Alemania se define como empresa con menos de 500 empleados y menos de €50M de facturación.", correcto: true, explicacion: "VERDADERO. Unit 2: 'SME: Below 500 employees, less than €50 million annual turnover'." }
+];
+
+// ============================================================
+// VOCABULARIO
+// ============================================================
+const VOCAB_UNIT1 = [
+    { de: "Baugenehmigung", en: "Construction permit" },
+    { de: "Eigentum", en: "Property" },
+    { de: "Vertrag", en: "Contract" },
+    { de: "Pünktlichkeit", en: "Punctuality" },
+    { de: "Tagesordnung", en: "Agenda" },
+    { de: "Verhandlung", en: "Negotiation" },
+    { de: "Körperschaftssteuer", en: "Corporation tax" },
+    { de: "Energieversorgung", en: "Energy supply" },
+    { de: "Steuererklärung", en: "Tax declaration" },
+    { de: "Verkehrsstau", en: "Traffic jam" },
+    { de: "Durchschnitt", en: "Average" },
+    { de: "Verabredung", en: "Appointment" }
+];
+const VOCAB_UNIT2 = [
+    { de: "Lieferkette", en: "Supply chain" },
+    { de: "Verantwortung", en: "Responsibility" },
+    { de: "freiwillig", en: "Voluntary" },
+    { de: "verpflichtend", en: "Mandatory" },
+    { de: "Sozialpartnerschaft", en: "Social partnership" },
+    { de: "Umsatz", en: "Turnover" },
+    { de: "Wohlstand", en: "Affluence / prosperity" },
+    { de: "Rahmen", en: "Framework" },
+    { de: "Werte", en: "Values" },
+    { de: "Konfliktvermeidung", en: "Conflict prevention" },
+    { de: "Beitrag", en: "Contribution" },
+    { de: "umfassend", en: "Comprehensive" }
+];
+
+// ============================================================
+// CATEGORÍAS
+// ============================================================
+const CAT_UNITS_DATA = [
+    { item: "Ranking 106th para abrir un negocio", correcto: "Unit 1" },
+    { item: "Article 14: Property entails obligations", correcto: "Unit 2" },
+    { item: "Tasa corporativa 29.9% en 2023", correcto: "Unit 1" },
+    { item: "EU Green Deal — neutralidad climática 2050", correcto: "Unit 2" },
+    { item: "Stuttgart 21 — presupuesto original 3 billion euros", correcto: "Unit 1" },
+    { item: "Supply Chain Due Diligence Act (Jan 2023)", correcto: "Unit 2" },
+    { item: "Electricidad industrial: 0.40 USD/kWh", correcto: "Unit 1" },
+    { item: "CSR Explícita vs. Implícita (Matten & Moon 2008)", correcto: "Unit 2" },
+    { item: "97,000 regulaciones en 2024", correcto: "Unit 1" },
+    { item: "ODS — 17 Sustainable Development Goals (2015)", correcto: "Unit 2" },
+    { item: "Aeropuerto de Berlín abrió en 2020", correcto: "Unit 1" },
+    { item: "Objetivo GEI: neutral para 2045", correcto: "Unit 2" },
+    { item: "Pünktlichkeit — 15 min de retraso = ofensa grave", correcto: "Unit 1" },
+    { item: "Every second early retirement: psychological illnesses", correcto: "Unit 2" },
+    { item: "982.1 billion euros — déficit infraestructuras 2025-2035", correcto: "Unit 1" },
+    { item: "Liberal-Intellectual Milieu ≈ 10% población", correcto: "Unit 2" }
+];
+const CAT_CSR_DATA = [
+    { item: "Políticas voluntarias motivadas por expectativas de stakeholders", correcto: "Explícita" },
+    { item: "Valores, normas y reglas codificadas y obligatorias", correcto: "Implícita" },
+    { item: "Corporate programs and strategies for sustainability", correcto: "Explícita" },
+    { item: "Compulsory insurance: health, pensions, unemployment, accident", correcto: "Implícita" },
+    { item: "CSR típica de países anglosajones (USA, UK)", correcto: "Explícita" },
+    { item: "CSR típica de Alemania — basada en el Grundgesetz", correcto: "Implícita" },
+    { item: "Iniciativas voluntarias de reporting de sostenibilidad", correcto: "Explícita" },
+    { item: "Works Constitution Act — co-determination obligatoria", correcto: "Implícita" },
+    { item: "Marketing campaigns around ethical/green values", correcto: "Explícita" },
+    { item: "Supply Chain Due Diligence Act — obligación legal", correcto: "Implícita" }
+];
+const CAT_INFRA_DATA = [
+    { item: "Planificación iniciada en 1995", correcto: "Stuttgart 21" },
+    { item: "Previsto abrir en 2012", correcto: "Aeropuerto Berlín" },
+    { item: "Presupuesto original: 3 billion euros", correcto: "Stuttgart 21" },
+    { item: "Coste final: 7 billion euros", correcto: "Aeropuerto Berlín" },
+    { item: "Protestas ciudadanas masivas en 2010", correcto: "Stuttgart 21" },
+    { item: "Inaugurado en 2020", correcto: "Aeropuerto Berlín" },
+    { item: "Coste final supera 10 billion euros", correcto: "Stuttgart 21" },
+    { item: "Presupuesto original: 2 billion euros", correcto: "Aeropuerto Berlín" }
+];
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let currentFlashIndex = 0;
+let flashData = [...STUDY_DATA];
+let currentQuizIndex = 0;
+let quizData = [];
+let tfIndex = 0;
+let tfData = [];
+let speedTimer, speedTimeLeft, speedCorrect, speedWrong, speedIndex, speedData;
+let simIndex = 0, simScore = 0, simQuestions = [], timerInterval;
+let catMode = '', catIndex = 0, catCorrect = 0, catData = [], lastCatMode = '';
+let matchSelection = null;
+let wrongAnswers = JSON.parse(localStorage.getItem('wrongAnswers') || '[]');
+
+// ============================================================
+// NAV
+// ============================================================
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+    const btns = document.querySelectorAll('.tab-btn');
+    const map = { flashcards: 0, quiz: 1, truefalse: 2, speedrun: 3, match: 4, categorias: 5, simulador: 6, errores: 7 };
+    if (btns[map[viewId]]) btns[map[viewId]].classList.add('active');
+    if (viewId === 'flashcards') updateFlash();
+    if (viewId === 'quiz') initQuiz();
+    if (viewId === 'truefalse') initTF();
+    if (viewId === 'match') initMatch('unit1');
+    if (viewId === 'errores') renderErrors();
+    if (viewId === 'speedrun') resetSpeedrun();
+    if (viewId === 'categorias') showCatMenu();
+}
+
+// ============================================================
+// FLASHCARDS
+// ============================================================
+function updateFlash() {
+    const item = flashData[currentFlashIndex];
+    document.getElementById('flash-front-text').innerText = item.pregunta;
+    document.getElementById('flash-back-text').innerText = item.respuesta;
+    document.getElementById('flash-unit').innerText = `Unit ${item.unit}`;
+    document.getElementById('flash-counter').innerText = `${currentFlashIndex + 1} / ${flashData.length}`;
+    document.getElementById('flash-progress').style.width = `${((currentFlashIndex + 1) / flashData.length) * 100}%`;
+    document.querySelector('.card').classList.remove('flipped');
+}
+function nextFlash() { currentFlashIndex = (currentFlashIndex + 1) % flashData.length; updateFlash(); }
+function prevFlash() { currentFlashIndex = (currentFlashIndex - 1 + flashData.length) % flashData.length; updateFlash(); }
+function shuffleFlash() { flashData = [...STUDY_DATA].sort(() => Math.random() - 0.5); currentFlashIndex = 0; updateFlash(); }
+
+// ============================================================
+// CUESTIONARIO
+// ============================================================
+function initQuiz() {
+    quizData = [...STUDY_DATA].sort(() => Math.random() - 0.5);
+    currentQuizIndex = 0;
+    document.getElementById('quiz-content').innerHTML = `
+        <div class="question-text" id="quiz-question"></div>
+        <div class="options-grid" id="quiz-options"></div>
+        <div class="feedback-box" id="quiz-feedback"></div>`;
+    loadQuizQuestion();
+}
+function loadQuizQuestion() {
+    const item = quizData[currentQuizIndex];
+    document.getElementById('quiz-feedback').style.display = 'none';
+    document.getElementById('quiz-next-btn').style.display = 'none';
+    document.getElementById('quiz-question').innerHTML = item.pregunta + `<span class="unit-badge">Unit ${item.unit}</span>`;
+    document.getElementById('quiz-progress').style.width = `${(currentQuizIndex / quizData.length) * 100}%`;
+    document.getElementById('quiz-counter').innerText = `${currentQuizIndex + 1} / ${quizData.length}`;
+    const optionsDiv = document.getElementById('quiz-options');
+    optionsDiv.innerHTML = '';
+    [...item.opciones].sort(() => Math.random() - 0.5).forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn'; btn.innerText = opt;
+        btn.onclick = () => checkQuizAnswer(opt, btn, item);
+        optionsDiv.appendChild(btn);
+    });
+}
+function checkQuizAnswer(selected, btn, item) {
+    const feedback = document.getElementById('quiz-feedback');
+    document.querySelectorAll('#quiz-options .option-btn').forEach(b => b.disabled = true);
+    const isCorrect = selected === item.respuesta;
+    if (isCorrect) {
+        btn.classList.add('correct');
+        feedback.style.background = '#d4edda'; feedback.style.color = '#155724';
+        feedback.innerHTML = `<strong>✅ ¡Correcto!</strong><br>${item.explicacion}`;
+    } else {
+        btn.classList.add('wrong');
+        feedback.style.background = '#f8d7da'; feedback.style.color = '#721c24';
+        feedback.innerHTML = `<strong>❌ Incorrecto.</strong> La respuesta es: <em>${item.respuesta}</em>.<br>${item.explicacion}`;
+        document.querySelectorAll('#quiz-options .option-btn').forEach(b => { if (b.innerText === item.respuesta) b.classList.add('correct'); });
+        saveWrongAnswer('quiz', item.pregunta, item.respuesta);
+    }
+    feedback.style.display = 'block';
+    document.getElementById('quiz-next-btn').style.display = 'inline-block';
+}
+function nextQuizQuestion() {
+    currentQuizIndex++;
+    if (currentQuizIndex < quizData.length) loadQuizQuestion();
+    else document.getElementById('quiz-content').innerHTML = `<div style="text-align:center;padding:2rem;"><h2>🎉 ¡Repaso Completado!</h2><p>Has revisado las ${quizData.length} preguntas.</p><button class="btn-main" onclick="initQuiz()">Volver a empezar</button></div>`;
+}
+
+// ============================================================
+// VERDADERO / FALSO
+// ============================================================
+function initTF() {
+    tfData = [...TRUE_FALSE_DATA].sort(() => Math.random() - 0.5);
+    tfIndex = 0;
+    loadTF();
+}
+function loadTF() {
+    const item = tfData[tfIndex];
+    document.getElementById('tf-statement').innerText = item.enunciado;
+    document.getElementById('tf-feedback').style.display = 'none';
+    document.getElementById('tf-next-btn').style.display = 'none';
+    document.getElementById('tf-true-btn').disabled = false;
+    document.getElementById('tf-false-btn').disabled = false;
+    document.getElementById('tf-counter').innerText = `${tfIndex + 1} / ${tfData.length}`;
+    document.getElementById('tf-progress').style.width = `${((tfIndex) / tfData.length) * 100}%`;
+}
+function checkTF(userAnswer) {
+    const item = tfData[tfIndex];
+    const feedback = document.getElementById('tf-feedback');
+    document.getElementById('tf-true-btn').disabled = true;
+    document.getElementById('tf-false-btn').disabled = true;
+    const isCorrect = userAnswer === item.correcto;
+    if (isCorrect) {
+        feedback.style.background = '#d4edda'; feedback.style.color = '#155724';
+        feedback.innerHTML = `<strong>✅ ¡Correcto!</strong><br>${item.explicacion}`;
+    } else {
+        feedback.style.background = '#f8d7da'; feedback.style.color = '#721c24';
+        feedback.innerHTML = `<strong>❌ Incorrecto.</strong><br>${item.explicacion}`;
+        saveWrongAnswer('V/F', item.enunciado, item.correcto ? 'VERDADERO' : 'FALSO');
+    }
+    feedback.style.display = 'block';
+    document.getElementById('tf-next-btn').style.display = 'inline-block';
+}
+function nextTF() {
+    tfIndex++;
+    if (tfIndex < tfData.length) loadTF();
+    else {
+        document.getElementById('tf-statement').innerText = '🎉 ¡Completado!';
+        document.getElementById('tf-feedback').style.display = 'none';
+        document.getElementById('tf-next-btn').style.display = 'none';
+        document.getElementById('tf-true-btn').disabled = true;
+        document.getElementById('tf-false-btn').disabled = true;
+        document.getElementById('tf-progress').style.width = '100%';
+    }
+}
+
+// ============================================================
+// SPEEDRUN
+// ============================================================
+function startSpeedrun() {
+    speedCorrect = 0; speedWrong = 0; speedIndex = 0; speedTimeLeft = 60;
+    speedData = [...STUDY_DATA].sort(() => Math.random() - 0.5);
+    document.getElementById('speed-start').style.display = 'none';
+    document.getElementById('speed-game').style.display = 'block';
+    document.getElementById('speed-results').style.display = 'none';
+    loadSpeedQuestion();
+    speedTimer = setInterval(() => {
+        speedTimeLeft--;
+        const el = document.getElementById('speed-timer');
+        el.innerText = speedTimeLeft;
+        el.classList.toggle('warning', speedTimeLeft <= 10);
+        if (speedTimeLeft <= 0) endSpeedrun();
+    }, 1000);
+}
+function loadSpeedQuestion() {
+    if (speedIndex >= speedData.length) speedIndex = 0;
+    const item = speedData[speedIndex];
+    document.getElementById('speed-question').innerHTML = item.pregunta + `<span class="unit-badge">Unit ${item.unit}</span>`;
+    const opts = document.getElementById('speed-options');
+    opts.innerHTML = '';
+    [...item.opciones].sort(() => Math.random() - 0.5).forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn'; btn.innerText = opt;
+        btn.onclick = () => {
+            if (opt === item.respuesta) { speedCorrect++; } else { speedWrong++; }
+            document.getElementById('speed-correct').innerText = speedCorrect;
+            document.getElementById('speed-wrong').innerText = speedWrong;
+            speedIndex++;
+            loadSpeedQuestion();
+        };
+        opts.appendChild(btn);
+    });
+}
+function endSpeedrun() {
+    clearInterval(speedTimer);
+    document.getElementById('speed-game').style.display = 'none';
+    document.getElementById('speed-results').style.display = 'block';
+    document.getElementById('speed-final-score').innerText = speedCorrect;
+    document.getElementById('speed-res-correct').innerText = speedCorrect;
+    document.getElementById('speed-res-wrong').innerText = speedWrong;
+    const ratings = ['Sigue practicando 💪', 'Buen intento 👍', '¡Muy bien! 🔥', '¡Excelente! ⭐', '¡Imbatible! 🏆'];
+    const ri = Math.min(Math.floor(speedCorrect / 5), 4);
+    document.getElementById('speed-rating').innerText = ratings[ri];
+}
+function resetSpeedrun() {
+    clearInterval(speedTimer);
+    document.getElementById('speed-start').style.display = 'block';
+    document.getElementById('speed-game').style.display = 'none';
+    document.getElementById('speed-results').style.display = 'none';
+}
+
+// ============================================================
+// VOCABULARIO (MATCHING)
+// ============================================================
+function initMatch(set) {
+    matchSelection = null;
+    const pool = set === 'unit1' ? VOCAB_UNIT1 : set === 'unit2' ? VOCAB_UNIT2 : [...VOCAB_UNIT1, ...VOCAB_UNIT2];
+    const sample = [...pool].sort(() => Math.random() - 0.5).slice(0, 8);
+    const left = document.getElementById('match-left');
+    const right = document.getElementById('match-right');
+    const score = document.getElementById('match-score');
+    left.innerHTML = ''; right.innerHTML = ''; score.style.display = 'none';
+    const shufDe = [...sample].sort(() => Math.random() - 0.5);
+    const shufEn = [...sample].sort(() => Math.random() - 0.5);
+    shufDe.forEach(v => {
+        const d = document.createElement('div'); d.className = 'match-item'; d.innerText = v.de; d.dataset.key = v.de;
+        d.onclick = () => handleMatch(d, 'de', sample); left.appendChild(d);
+    });
+    shufEn.forEach(v => {
+        const d = document.createElement('div'); d.className = 'match-item'; d.innerText = v.en; d.dataset.key = v.de;
+        d.onclick = () => handleMatch(d, 'en', sample); right.appendChild(d);
+    });
+}
+function handleMatch(el, type, sample) {
+    if (el.classList.contains('matched')) return;
+    if (!matchSelection) {
+        matchSelection = { el, type }; el.classList.add('selected');
+    } else {
+        if (matchSelection.type === type) {
+            matchSelection.el.classList.remove('selected');
+            matchSelection = { el, type }; el.classList.add('selected'); return;
+        }
+        const deEl = type === 'de' ? el : matchSelection.el;
+        const enEl = type === 'en' ? el : matchSelection.el;
+        if (deEl.dataset.key === enEl.dataset.key) {
+            deEl.style.background = '#d4edda'; deEl.style.borderColor = '#27ae60';
+            enEl.style.background = '#d4edda'; enEl.style.borderColor = '#27ae60';
+            setTimeout(() => { deEl.classList.add('matched'); enEl.classList.add('matched'); checkMatchComplete(); }, 400);
+        } else {
+            deEl.style.background = '#f8d7da'; deEl.style.borderColor = '#e74c3c';
+            enEl.style.background = '#f8d7da'; enEl.style.borderColor = '#e74c3c';
+            setTimeout(() => {
+                deEl.style.background = ''; deEl.style.borderColor = '';
+                enEl.style.background = ''; enEl.style.borderColor = '';
+            }, 600);
+        }
+        matchSelection.el.classList.remove('selected');
+        matchSelection = null;
+    }
+}
+function checkMatchComplete() {
+    const remaining = document.querySelectorAll('.match-item:not(.matched)').length;
+    if (remaining === 0) {
+        const score = document.getElementById('match-score');
+        score.style.display = 'block';
+        score.innerText = '🎉 ¡Todos los pares encontrados! ¡Perfecto!';
+    }
+}
+
+// ============================================================
+// CATEGORÍAS
+// ============================================================
+function showCatMenu() {
+    document.getElementById('cat-menu').style.display = 'block';
+    document.getElementById('cat-game').style.display = 'none';
+    document.getElementById('cat-results').style.display = 'none';
+}
+function startCat(mode) {
+    catMode = mode; lastCatMode = mode;
+    catIndex = 0; catCorrect = 0;
+    if (mode === 'units') catData = [...CAT_UNITS_DATA].sort(() => Math.random() - 0.5);
+    else if (mode === 'csr') catData = [...CAT_CSR_DATA].sort(() => Math.random() - 0.5);
+    else catData = [...CAT_INFRA_DATA].sort(() => Math.random() - 0.5);
+    document.getElementById('cat-menu').style.display = 'none';
+    document.getElementById('cat-results').style.display = 'none';
+    document.getElementById('cat-game').style.display = 'block';
+    if (mode === 'units') {
+        document.getElementById('cat-instruction').innerText = '¿Este concepto pertenece a la Unit 1 o la Unit 2?';
+        setupCatButtons(['Unit 1', 'Unit 2'], '#3498db', '#8e44ad');
+    } else if (mode === 'csr') {
+        document.getElementById('cat-instruction').innerText = '¿Esta descripción corresponde a CSR Explícita o Implícita?';
+        setupCatButtons(['Explícita', 'Implícita'], '#27ae60', '#e74c3c');
+    } else {
+        document.getElementById('cat-instruction').innerText = '¿Este dato es del Stuttgart 21 o del Aeropuerto de Berlín?';
+        setupCatButtons(['Stuttgart 21', 'Aeropuerto Berlín'], '#f39c12', '#16a085');
+    }
+    loadCatItem();
+}
+function setupCatButtons(labels, color1, color2) {
+    const btns = document.getElementById('cat-buttons');
+    btns.innerHTML = '';
+    labels.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn'; btn.innerText = label;
+        btn.style.background = i === 0 ? color1 : color2; btn.style.color = 'white';
+        btn.onclick = () => checkCat(label);
+        btns.appendChild(btn);
+    });
+}
+function loadCatItem() {
+    const item = catData[catIndex];
+    document.getElementById('cat-item-text').innerText = item.item;
+    document.getElementById('cat-result').style.display = 'none';
+    document.getElementById('cat-next-btn').style.display = 'none';
+    document.getElementById('cat-counter').innerText = `${catIndex + 1} / ${catData.length}`;
+    document.getElementById('cat-progress').style.width = `${(catIndex / catData.length) * 100}%`;
+    document.querySelectorAll('.cat-btn').forEach(b => b.disabled = false);
+}
+function checkCat(selected) {
+    const item = catData[catIndex];
+    document.querySelectorAll('.cat-btn').forEach(b => b.disabled = true);
+    const result = document.getElementById('cat-result');
+    const isCorrect = selected === item.correcto;
+    if (isCorrect) {
+        catCorrect++;
+        result.style.background = '#d4edda'; result.style.color = '#155724';
+        result.innerHTML = `✅ ¡Correcto! Es <strong>${item.correcto}</strong>.`;
+    } else {
+        result.style.background = '#f8d7da'; result.style.color = '#721c24';
+        result.innerHTML = `❌ Incorrecto. Es <strong>${item.correcto}</strong>.`;
+    }
+    result.style.display = 'block';
+    document.getElementById('cat-next-btn').style.display = 'inline-block';
+}
+function nextCat() {
+    catIndex++;
+    if (catIndex < catData.length) loadCatItem();
+    else {
+        document.getElementById('cat-game').style.display = 'none';
+        document.getElementById('cat-results').style.display = 'block';
+        document.getElementById('cat-final-score').innerText = `${catCorrect} / ${catData.length}`;
+        const pct = catCorrect / catData.length;
+        document.getElementById('cat-rating').innerText = pct >= 0.9 ? '🏆 ¡Excelente dominio!' : pct >= 0.7 ? '⭐ ¡Muy bien!' : pct >= 0.5 ? '👍 Buen intento, sigue practicando' : '💪 Repasa el material y vuelve a intentarlo';
+    }
+}
+function restartCat() { startCat(lastCatMode); }
+
+// ============================================================
+// SIMULACRO
+// ============================================================
+function startSim() {
+    simIndex = 0; simScore = 0;
+    simQuestions = [...STUDY_DATA].sort(() => Math.random() - 0.5).slice(0, 15);
+    document.getElementById('sim-start').style.display = 'none';
+    document.getElementById('sim-content').style.display = 'block';
+    document.getElementById('sim-results').style.display = 'none';
+    loadSimQuestion();
+    let timeLeft = 480;
+    timerInterval = setInterval(() => {
+        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+        const el = document.getElementById('sim-timer');
+        el.innerText = `⏱ Tiempo: ${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        el.classList.toggle('low', timeLeft <= 60);
+        if (timeLeft-- <= 0) endSim();
+    }, 1000);
+}
+function loadSimQuestion() {
+    const item = simQuestions[simIndex];
+    document.getElementById('sim-question').innerHTML = `${simIndex + 1}. ${item.pregunta}<span class="unit-badge">Unit ${item.unit}</span>`;
+    document.getElementById('sim-q-counter').innerText = `${simIndex + 1} / ${simQuestions.length}`;
+    document.getElementById('sim-progress').style.width = `${(simIndex / simQuestions.length) * 100}%`;
+    const optDiv = document.getElementById('sim-options'); optDiv.innerHTML = '';
+    [...item.opciones].sort(() => Math.random() - 0.5).forEach(o => {
+        const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+        b.onclick = () => {
+            document.querySelectorAll('#sim-options .option-btn').forEach(x => x.classList.remove('selected-sim'));
+            b.classList.add('selected-sim'); b.style.borderColor = 'var(--accent)';
+        };
+        optDiv.appendChild(b);
+    });
+}
+function submitSimAnswer() {
+    const sel = document.querySelector('#sim-options .selected-sim');
+    if (!sel) return alert('Selecciona una opción primero.');
+    if (sel.innerText === simQuestions[simIndex].respuesta) simScore++;
+    simIndex++;
+    if (simIndex < simQuestions.length) loadSimQuestion();
+    else endSim();
+}
+function endSim() {
+    clearInterval(timerInterval);
+    document.getElementById('sim-content').style.display = 'none';
+    document.getElementById('sim-results').style.display = 'block';
+    const n = simQuestions.length;
+    document.getElementById('sim-score-text').innerText = `${simScore} / ${n}`;
+    const pct = simScore / n;
+    document.getElementById('sim-rating').innerText = pct >= 0.9 ? '🏆 ¡Sobresaliente! Estás listo para el examen.' : pct >= 0.7 ? '⭐ ¡Muy bien! Sigue repasando los errores.' : pct >= 0.5 ? '👍 Aprobado, pero puedes hacerlo mejor.' : '💪 Necesitas más práctica — repasa las flashcards.';
+    const review = document.getElementById('sim-review');
+    review.innerHTML = '<h3>Revisión:</h3>';
+    simQuestions.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'margin-bottom:0.8rem;padding:0.8rem;border-radius:6px;font-size:0.9rem;';
+        div.style.background = '#f8f9fa';
+        div.innerHTML = `<strong>P${i+1}:</strong> ${item.pregunta}<br><span style="color:var(--success)">✅ ${item.respuesta}</span>`;
+        review.appendChild(div);
+    });
+}
+function resetSim() {
+    clearInterval(timerInterval);
+    document.getElementById('sim-results').style.display = 'none';
+    document.getElementById('sim-start').style.display = 'block';
+}
+
+// ============================================================
+// MIS ERRORES
+// ============================================================
+function saveWrongAnswer(mode, question, correctAnswer) {
+    const key = question.substring(0, 60);
+    if (!wrongAnswers.find(e => e.key === key)) {
+        wrongAnswers.push({ key, mode, question, correctAnswer, date: new Date().toLocaleDateString() });
+        localStorage.setItem('wrongAnswers', JSON.stringify(wrongAnswers));
+    }
+}
+function renderErrors() {
+    const div = document.getElementById('errores-list');
+    if (wrongAnswers.length === 0) {
+        div.innerHTML = '<div class="no-errors">🎉 ¡Sin errores registrados aún! Juega al Cuestionario o V/F.</div>';
+        return;
+    }
+    div.innerHTML = `<ul class="error-list">${wrongAnswers.map(e => `<li><strong>[${e.mode}]</strong> ${e.question}<br>Respuesta correcta: <em>${e.correctAnswer}</em></li>`).join('')}</ul>`;
+}
+function clearErrors() {
+    wrongAnswers = [];
+    localStorage.removeItem('wrongAnswers');
+    renderErrors();
+}
+
+// ============================================================
+// INICIO
+// ============================================================
+updateFlash();
+</script>
+</body>
+</html>
